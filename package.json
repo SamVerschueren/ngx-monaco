@@ -1,0 +1,49 @@
+{
+	"name": "ngx-monaco",
+	"version": "0.0.0",
+	"description": "Monaco Editor for Angular",
+	"license": "MIT",
+	"repository": "SamVerschueren/ngx-monaco",
+	"author": {
+		"name": "Sam Verschueren",
+		"email": "sam.verschueren@gmail.com"
+	},
+	"engines": {
+		"node": ">=6"
+	},
+	"scripts": {
+		"test": "npm run lint",
+		"build": "ng-packagr -p package.json",
+		"lint": "tslint -p . --format stylish",
+		"tsc": "tsc"
+	},
+	"keywords": [
+		"angular",
+		"ng",
+		"monaco",
+		"editor",
+		"monaco-editor",
+		"vscode",
+		"vs"
+	],
+	"peerDependencies": {
+		"@angular/common": "^5.1.0",
+		"@angular/core": "^5.1.0",
+		"monaco-editor": "^0.10.1",
+		"rxjs": "^5.5.5"
+	},
+	"devDependencies": {
+		"@angular/common": "^5.1.0",
+		"@angular/core": "^5.1.0",
+		"monaco-editor": "^0.10.1",
+		"rxjs": "^5.5.5",
+		"tslint": "^5.8.0",
+		"tslint-xo": "^0.3.0",
+		"typescript": "^2.6.2"
+	},
+	"ngPackage": {
+		"lib": {
+			"entryFile": "src/index.ts"
+		}
+	}
+}

@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"noImplicitAny": true,
+		"module": "es2015",
+		"target": "es5",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"declaration": true,
+		"moduleResolution": "node",
+		"noUnusedLocals": true,
+		"lib": [
+			"es2015",
+			"dom"
+		],
+		"types": [
+			"monaco-editor"
+		],
+		"outDir": "./"
+	},
+	"files": [
+		"src/index.ts"
+	],
+	"angularCompilerOptions": {
+		"strictMetadataEmit": true,
+		"skipTemplateCodegen": true
+	}
+}
