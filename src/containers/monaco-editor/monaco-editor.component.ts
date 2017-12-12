@@ -1,3 +1,4 @@
+/// <reference path="../../typings/monaco-editor/monaco.d.ts" />
 import {Component, ElementRef, OnInit, Input, Inject, Output, EventEmitter, HostListener, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {debounceTime, takeUntil, filter} from 'rxjs/operators';
@@ -5,6 +6,7 @@ import {debounceTime, takeUntil, filter} from 'rxjs/operators';
 import {COMPLETION_PROVIDERS} from '../../tokens/completion-provider.token';
 
 import {File} from '../../entities/file';
+import {CompletionItemProvider} from '../../entities/completion-item-provider';
 
 declare const window: any;
 
@@ -14,31 +16,43 @@ declare const window: any;
 	template: ''
 })
 export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
+	// Inputs
 	@Input() theme: string;
-	@Input() file: any;
-	@Input() options: any = {
+	@Input() file: File;
+	@Input() options: monaco.editor.IEditorOptions = {
 		minimap: {
 			enabled: true
 		},
 		folding: true
 	};
 
+	// Outputs
 	@Output() ready = new EventEmitter();
 
-	private editor: any;
-	private resize$ = new Subject();
+	// Internal
+	private editor: monaco.editor.IEditor;
+	private resize$ = new Subject<Event>();
 	private destroy$ = new Subject();
 
 	constructor(
-		@Inject(COMPLETION_PROVIDERS) private completionProviders: any[],
+		@Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[],
 		private editorRef: ElementRef
 	) {}
 
 	open(file: File) {
-		let model = window.monaco.editor.getModel(file.uri);
+		this.file = file;
+
+		if (!this.editor) {
+			// Exit early if the editor is not bootstrapped yet. It will automatically open the provided file when ready.
+			return;
+		}
+
+		const uri = monaco.Uri.file(file.uri);
+
+		let model = monaco.editor.getModel(uri);
 
 		if (!model) {
-			model = window.monaco.editor.createModel(file.content, file.language, file.uri);
+			model = monaco.editor.createModel(file.content, file.language, uri);
 		}
 
 		this.editor.setModel(model);
@@ -55,15 +69,17 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 		script.onload = () => {
 			window.require.config({paths: {vs: 'libs/vs'}});
 			window.require(['vs/editor/editor.main'], () => {
-				this.editor = window.monaco.editor.create(this.editorRef.nativeElement, {
+				this.editor = monaco.editor.create(this.editorRef.nativeElement, {
 					theme: this.theme,
 					...this.options
 				});
 
+				// Register all the completion providers
 				for (const completionProvider of this.completionProviders) {
-					completionProvider.register(window.monaco.languages);
+					monaco.languages.registerCompletionItemProvider(completionProvider.language, completionProvider);
 				}
 
+				// Open the file
 				if (this.file) {
 					this.open(this.file);
 				}
@@ -73,6 +89,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 			});
 		};
 
+		// Add the script tag to the page in order to start loading monaco
 		document.body.appendChild(script);
 
 		// Resize automatically
@@ -89,7 +106,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 	}
 
 	ngOnDestroy() {
-		this.destroy$.next(true);
+		this.destroy$.next();
 	}
 
 	ngOnChanges(changes: SimpleChanges) {
@@ -104,7 +121,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 
 		if (changes.theme) {
 			// Update the theme
-			window.monaco.editor.setTheme(changes.theme.currentValue);
+			monaco.editor.setTheme(changes.theme.currentValue);
 		}
 
 		if (changes.file) {

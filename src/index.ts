@@ -6,6 +6,7 @@ export {MonacoEditorComponent} from './containers/monaco-editor/monaco-editor.co
 
 // Entities
 export {File} from './entities/file';
+export {CompletionItemProvider} from './entities/completion-item-provider';
 
 // Tokens
 export {COMPLETION_PROVIDERS} from './tokens/completion-provider.token';

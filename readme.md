@@ -88,6 +88,66 @@ export class AppComponent {
 }
 ```
 
+### Completion providers
+
+The completion item provider interface defines the contract between extensions and the [IntelliSense](https://code.visualstudio.com/docs/editor/intellisense).
+
+```ts
+import { Injectable } from '@angular/core';
+import { CompletionItemProvider } from 'ngx-monaco';
+
+@Injectable()
+export class TravisCompletionProvider implements CompletionItemProvider {
+	get language() {
+		return 'yaml';
+	}
+
+	provideCompletionItems(model: monaco.editor.IReadOnlyModel): any {
+		const filename = model.uri.path.split('/').pop();
+
+		if (filename !== '.travis.yaml') {
+			return [];
+		}
+
+		return [
+			{
+				label: 'language',
+				kind: monaco.languages.CompletionItemKind.Property,
+				documentation: 'Set the language',
+				insertText: 'language: '
+			}
+		]
+	}
+}
+```
+
+> You can play around with completion providers in the [Monaco Playground](https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-completion-provider-example).
+
+Register the completion provider in your module.
+
+```ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { MonacoEditorModule, COMPLETION_PROVIDERS } from 'ngx-monaco';
+
+import { TravisCompletionProvider } from './providers/travis-completion.provider';
+
+@NgModule({
+	declarations: [
+		AppComponent
+	],
+	imports: [
+		BrowserModule,
+		MonacoEditorModule.forRoot()
+	],
+	providers: [
+		{ provide: COMPLETION_PROVIDERS, useClass: TravisCompletionProvider, multi: true }
+	]
+	bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
 
 ## Related
 

@@ -13,9 +13,9 @@
 	},
 	"scripts": {
 		"test": "npm run lint",
-		"build": "ng-packagr -p package.json",
+		"build": "npm run copy:typings && ng-packagr -p package.json",
 		"lint": "tslint -p . --format stylish",
-		"tsc": "tsc"
+		"copy:typings": "cpy node_modules/monaco-editor/monaco.d.ts src/typings/monaco-editor"
 	},
 	"keywords": [
 		"angular",
@@ -35,7 +35,9 @@
 	"devDependencies": {
 		"@angular/common": "^5.1.0",
 		"@angular/core": "^5.1.0",
+		"cpy-cli": "^1.0.1",
 		"monaco-editor": "^0.10.1",
+		"ng-packagr": "^1.6.0",
 		"rxjs": "^5.5.5",
 		"tslint": "^5.8.0",
 		"tslint-xo": "^0.3.0",

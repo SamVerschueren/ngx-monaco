@@ -12,9 +12,6 @@
 			"es2015",
 			"dom"
 		],
-		"types": [
-			"monaco-editor"
-		],
 		"outDir": "./"
 	},
 	"files": [
