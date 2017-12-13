@@ -1,5 +1,5 @@
 /// <reference path="../../typings/monaco-editor/monaco.d.ts" />
-import {Component, ElementRef, OnInit, Input, Inject, Output, EventEmitter, HostListener, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, OnInit, Input, Inject, Output, EventEmitter, HostListener, OnDestroy, OnChanges, SimpleChanges, Optional} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {debounceTime, takeUntil, filter} from 'rxjs/operators';
 
@@ -35,9 +35,20 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 	private destroy$ = new Subject();
 
 	constructor(
-		@Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[],
+		@Optional() @Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[],
 		private editorRef: ElementRef
 	) {}
+
+	private registerCompletionProviders() {
+		if (!this.completionProviders) {
+			return;
+		}
+
+		// Register all the completion providers
+		for (const completionProvider of this.completionProviders) {
+			monaco.languages.registerCompletionItemProvider(completionProvider.language, completionProvider);
+		}
+	}
 
 	open(file: File) {
 		this.file = file;
@@ -74,10 +85,8 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 					...this.options
 				});
 
-				// Register all the completion providers
-				for (const completionProvider of this.completionProviders) {
-					monaco.languages.registerCompletionItemProvider(completionProvider.language, completionProvider);
-				}
+				// Register the completion providers
+				this.registerCompletionProviders();
 
 				// Open the file
 				if (this.file) {
