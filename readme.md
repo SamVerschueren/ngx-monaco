@@ -75,7 +75,8 @@ import { File } from 'ngx-monaco';
 	template: `
 		<monaco-editor
 			theme="vs-dark"
-			[file]="file">
+			[file]="file"
+			(fileChange)="onFileChange($event)">
 		</monaco-editor>
 	`
 })
@@ -85,8 +86,14 @@ export class AppComponent {
 		language: 'javascript',
 		content: `console.log('hello world');`
 	};
+
+	onFileChange(file: File) {
+		// Handle file change
+	}
 }
 ```
+
+> You can use the `(fileChange)` event to listen to changes in the file.
 
 ### Completion providers
 

@@ -1,9 +1,12 @@
 /// <reference path="../../typings/monaco-editor/monaco.d.ts" />
 import {Component, ElementRef, OnInit, Input, Inject, Output, EventEmitter, HostListener, OnDestroy, OnChanges, SimpleChanges, Optional} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {debounceTime, takeUntil, filter} from 'rxjs/operators';
+import {merge} from 'rxjs/observable/merge';
+import {debounceTime, takeUntil, filter, take, map} from 'rxjs/operators';
 
 import {COMPLETION_PROVIDERS} from '../../tokens/completion-provider.token';
+
+import {fromDisposable} from '../../utils/observable/from-disposable';
 
 import {File} from '../../entities/file';
 import {CompletionItemProvider} from '../../entities/completion-item-provider';
@@ -28,6 +31,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 
 	// Outputs
 	@Output() ready = new EventEmitter();
+	@Output() fileChange = new EventEmitter<File>();
 
 	// Internal
 	private editor: monaco.editor.IEditor;
@@ -39,6 +43,10 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 		private editorRef: ElementRef
 	) {}
 
+	@HostListener('window:resize', ['$event']) onResize(event: Event) {
+		this.resize$.next(event);
+	}
+
 	private registerCompletionProviders() {
 		if (!this.completionProviders) {
 			return;
@@ -48,6 +56,26 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 		for (const completionProvider of this.completionProviders) {
 			monaco.languages.registerCompletionItemProvider(completionProvider.language, completionProvider);
 		}
+	}
+
+	private registerModelChangeListener(file: File, model: monaco.editor.IModel) {
+		const destroy = merge(
+			this.destroy$,
+			fromDisposable(model.onWillDispose.bind(model)).pipe(take(1))
+		);
+
+		// Subscribe to changes from the model
+		fromDisposable(model.onDidChangeContent.bind(model))
+			.pipe(
+				map(() => model.getValue()),
+				takeUntil(destroy)
+			)
+			.subscribe(content => {
+				this.fileChange.emit({
+					...file,
+					content
+				});
+			});
 	}
 
 	open(file: File) {
@@ -64,13 +92,12 @@ export class MonacoEditorComponent implements OnInit, OnDestroy, OnChanges {
 
 		if (!model) {
 			model = monaco.editor.createModel(file.content, file.language, uri);
+
+			// Listen for changes in the model
+			this.registerModelChangeListener(file, model);
 		}
 
 		this.editor.setModel(model);
-	}
-
-	@HostListener('window:resize', ['$event']) onResize(event: Event) {
-		this.resize$.next(event);
 	}
 
 	ngOnInit() {
