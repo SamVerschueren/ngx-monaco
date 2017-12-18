@@ -1,8 +1,8 @@
 // Modules
 export {MonacoEditorModule} from './monaco-editor.module';
 
-// Components
-export {MonacoEditorComponent} from './containers/monaco-editor/monaco-editor.component';
+// Directives
+export {MonacoEditorDirective} from './directives/monaco-editor/monaco-editor.directive';
 
 // Entities
 export {File} from './entities/file';
