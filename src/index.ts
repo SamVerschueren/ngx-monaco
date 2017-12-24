@@ -10,3 +10,6 @@ export {CompletionItemProvider} from './entities/completion-item-provider';
 
 // Tokens
 export {COMPLETION_PROVIDERS} from './tokens/completion-provider.token';
+
+// Re-export monaco editor options
+export type MonacoEditorOptions = monaco.editor.IEditorOptions;
