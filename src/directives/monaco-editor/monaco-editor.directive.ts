@@ -1,18 +1,19 @@
 /// <reference path="../../typings/monaco-editor/monaco.d.ts" />
-import {Directive, ElementRef, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
+import {Directive, ElementRef, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy, OnChanges, DoCheck, SimpleChanges} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {debounceTime, takeUntil, filter} from 'rxjs/operators';
+import {debounceTime, takeUntil, filter, map} from 'rxjs/operators';
 
 // Services
 import {MonacoEditorService} from '../../services/monaco-editor.service';
 
 // Entities
 import {File} from '../../entities/file';
+import {distinctUntilChanged} from 'rxjs/operators/distinctUntilChanged';
 
 @Directive({
 	selector: 'monaco-editor,[monaco-editor]'
 })
-export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges {
+export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, DoCheck {
 	// Inputs
 	@Input() theme: string;
 	@Input() file: File;
@@ -28,7 +29,7 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges {
 	@Output() fileChange = new EventEmitter<File>();
 
 	// Internal
-	private resize$ = new Subject<Event>();
+	private resize$ = new Subject();
 	private destroy$ = new Subject();
 
 	constructor(
@@ -36,8 +37,8 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges {
 		private editorRef: ElementRef
 	) {}
 
-	@HostListener('window:resize', ['$event']) onResize(event: Event) {
-		this.resize$.next(event);
+	@HostListener('window:resize') onResize() {
+		this.resize$.next();
 	}
 
 	/**
@@ -68,13 +69,12 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges {
 		// Resize the editor when the window resizes
 		this.resize$.pipe(
 			filter(() => Boolean(this.monacoEditorService.editor)),
+			map(() => ({width: this.editorRef.nativeElement.clientWidth, height: this.editorRef.nativeElement.clientHeight})),
+			distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
 			debounceTime(100),
-			takeUntil(this.destroy$)
-		).subscribe(() => {
-			this.monacoEditorService.editor.layout({
-				width: this.editorRef.nativeElement.clientWidth,
-				height: this.editorRef.nativeElement.clientHeight
-			});
+			takeUntil(this.destroy$),
+		).subscribe(dimension => {
+			this.monacoEditorService.editor.layout(dimension);
 		});
 	}
 
@@ -97,5 +97,9 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges {
 			// Open the new file
 			this.open(changes.file.currentValue);
 		}
+	}
+
+	ngDoCheck() {
+		this.resize$.next();
 	}
 }
