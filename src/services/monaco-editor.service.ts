@@ -2,7 +2,7 @@
 import {Injectable, ElementRef, Optional, Inject} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {take, map, takeUntil} from 'rxjs/operators';
+import {shareReplay, take, map, takeUntil, tap} from 'rxjs/operators';
 
 import {fromDisposable} from '../utils/observable/from-disposable';
 
@@ -22,6 +22,22 @@ export class MonacoEditorService {
 	private onFileChange = new Subject<File>();
 
 	fileChange$ = this.onFileChange.asObservable();
+
+	bootstrap$ = Observable.create((observer: any) => {
+		const script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = 'libs/vs/loader.js';
+		script.onload = () => {
+			window.require.config({paths: {vs: 'libs/vs'}});
+			window.require(['vs/editor/editor.main'], () => {
+				// Emit that we are ready
+				observer.next();
+			});
+		};
+
+		// Add the script tag to the page in order to start loading monaco
+		document.body.appendChild(script);
+	}).pipe(shareReplay(1));
 
 	constructor(
 		@Optional() @Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[]
@@ -66,34 +82,28 @@ export class MonacoEditorService {
 	 * @param options Editor options.
 	 */
 	load(container: ElementRef, options: {theme?: string; editor: monaco.editor.IEditorOptions}): Observable<void> {
-		return Observable.create((observer: any) => {
-			const script = document.createElement('script');
-			script.type = 'text/javascript';
-			script.src = 'libs/vs/loader.js';
-			script.onload = () => {
-				window.require.config({paths: {vs: 'libs/vs'}});
-				window.require(['vs/editor/editor.main'], () => {
-					this.monacoEditor = monaco.editor.create(container.nativeElement, {
-						theme: options.theme,
-						...options.editor
-					});
+		return this.bootstrap$.pipe(
+			tap(() => {
+				// Dispose all the current models
+				for (const model of monaco.editor.getModels()) {
+					model.dispose();
+				}
 
-					// Register the completion providers
-					this.registerCompletionProviders();
-
-					// Open the file
-					if (this.file) {
-						this.open(this.file);
-					}
-
-					// Emit that we are ready
-					observer.next();
+				// Create a new monaco editor
+				this.monacoEditor = monaco.editor.create(container.nativeElement, {
+					theme: options.theme,
+					...options.editor
 				});
-			};
 
-			// Add the script tag to the page in order to start loading monaco
-			document.body.appendChild(script);
-		}).pipe(take(1));
+				// Register the completion providers
+				this.registerCompletionProviders();
+
+				// Open the file
+				if (this.file) {
+					this.open(this.file);
+				}
+			})
+		);
 	}
 
 	/**
