@@ -1,5 +1,5 @@
 /// <reference path="../../typings/monaco-editor/monaco.d.ts" />
-import {Directive, ElementRef, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy, OnChanges, DoCheck, SimpleChanges} from '@angular/core';
+import {Directive, ElementRef, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy, OnChanges, AfterViewChecked, SimpleChanges} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {debounceTime, takeUntil, filter, map} from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ import {distinctUntilChanged} from 'rxjs/operators/distinctUntilChanged';
 @Directive({
 	selector: 'monaco-editor,[monaco-editor]'
 })
-export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, DoCheck {
+export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, AfterViewChecked {
 	// Inputs
 	@Input() theme: string;
 	@Input() file: File;
@@ -71,7 +71,7 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, DoCh
 			filter(() => Boolean(this.monacoEditorService.editor)),
 			map(() => ({width: this.editorRef.nativeElement.clientWidth, height: this.editorRef.nativeElement.clientHeight})),
 			distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
-			debounceTime(100),
+			debounceTime(50),
 			takeUntil(this.destroy$),
 		).subscribe(dimension => {
 			this.monacoEditorService.editor.layout(dimension);
@@ -99,7 +99,7 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, DoCh
 		}
 	}
 
-	ngDoCheck() {
+	ngAfterViewChecked() {
 		this.resize$.next();
 	}
 }
