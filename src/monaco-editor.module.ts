@@ -26,17 +26,12 @@ import {MonacoEditorOptions} from './entities/editor-options';
 })
 export class MonacoEditorModule {
 	static forRoot(config: {options?: MonacoEditorOptions} = {}): ModuleWithProviders {
-		const providers: any[] = [
-			MonacoEditorService
-		];
-
-		if (config.options) {
-			providers.push({provide: MONACO_EDITOR_OPTIONS, useValue: config.options});
-		}
-
 		return {
 			ngModule: MonacoEditorModule,
-			providers
+			providers: [
+				MonacoEditorService,
+				{provide: MONACO_EDITOR_OPTIONS, useValue: config.options || {}}
+			]
 		};
 	}
 }
