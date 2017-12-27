@@ -8,18 +8,20 @@ import {fromDisposable} from '../utils/observable/from-disposable';
 
 // Tokens
 import {COMPLETION_PROVIDERS} from '../tokens/completion-provider.token';
+import {MONACO_EDITOR_OPTIONS} from '../tokens/editor-options.token';
 
 // Entities
 import {CompletionItemProvider} from '../entities/completion-item-provider';
-import {File} from '../entities/file';
+import {MonacoEditorOptions} from '../entities/editor-options';
+import {MonacoFile} from '../entities/file';
 
 declare const window: any;
 
 @Injectable()
 export class MonacoEditorService {
-	private file: File;
+	private file: MonacoFile;
 	private monacoEditor: monaco.editor.IEditor;
-	private onFileChange = new Subject<File>();
+	private onFileChange = new Subject<MonacoFile>();
 
 	fileChange$ = this.onFileChange.asObservable();
 
@@ -40,7 +42,8 @@ export class MonacoEditorService {
 	}).pipe(shareReplay(1));
 
 	constructor(
-		@Optional() @Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[]
+		@Optional() @Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[],
+		@Optional() @Inject(MONACO_EDITOR_OPTIONS) private editorOptions: MonacoEditorOptions
 	) {}
 
 	get editor() {
@@ -58,7 +61,7 @@ export class MonacoEditorService {
 		}
 	}
 
-	private registerModelChangeListener(file: File, model: monaco.editor.IModel) {
+	private registerModelChangeListener(file: MonacoFile, model: monaco.editor.IModel) {
 		const destroy = fromDisposable(model.onWillDispose.bind(model)).pipe(take(1));
 
 		// Subscribe to changes from the model
@@ -81,7 +84,9 @@ export class MonacoEditorService {
 	 * @param container Container of the editor.
 	 * @param options Editor options.
 	 */
-	load(container: ElementRef, options: {theme?: string; editor: monaco.editor.IEditorOptions}): Observable<void> {
+	load(container: ElementRef, options: {theme?: string; editor?: MonacoEditorOptions} = {}): Observable<void> {
+		const editorOptions = options.editor || this.editorOptions || {};
+
 		return this.bootstrap$.pipe(
 			tap(() => {
 				// Dispose all the current models
@@ -92,7 +97,7 @@ export class MonacoEditorService {
 				// Create a new monaco editor
 				this.monacoEditor = monaco.editor.create(container.nativeElement, {
 					theme: options.theme,
-					...options.editor
+					...editorOptions
 				});
 
 				// Register the completion providers
@@ -111,7 +116,7 @@ export class MonacoEditorService {
 	 *
 	 * @param file File to open.
 	 */
-	open(file: File) {
+	open(file: MonacoFile) {
 		this.file = file;
 
 		if (!this.monacoEditor) {

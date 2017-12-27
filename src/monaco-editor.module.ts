@@ -7,6 +7,12 @@ import {MonacoEditorDirective} from './directives/monaco-editor/monaco-editor.di
 // Services
 import {MonacoEditorService} from './services/monaco-editor.service';
 
+// Tokens
+import {MONACO_EDITOR_OPTIONS} from './tokens/editor-options.token';
+
+// Entities
+import {MonacoEditorOptions} from './entities/editor-options';
+
 @NgModule({
 	imports: [
 		CommonModule
@@ -19,12 +25,18 @@ import {MonacoEditorService} from './services/monaco-editor.service';
 	]
 })
 export class MonacoEditorModule {
-	static forRoot(): ModuleWithProviders {
+	static forRoot(config: {options?: MonacoEditorOptions} = {}): ModuleWithProviders {
+		const providers: any[] = [
+			MonacoEditorService
+		];
+
+		if (config.options) {
+			providers.push({provide: MONACO_EDITOR_OPTIONS, useValue: config.options});
+		}
+
 		return {
 			ngModule: MonacoEditorModule,
-			providers: [
-				MonacoEditorService
-			]
+			providers
 		};
 	}
 }

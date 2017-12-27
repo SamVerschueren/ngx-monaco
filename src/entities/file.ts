@@ -1,4 +1,4 @@
-export interface File {
+export interface MonacoFile {
 	uri: string;
 	content: string;
 	language?: string;

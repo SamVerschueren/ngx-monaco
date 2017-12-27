@@ -1,14 +1,14 @@
 /// <reference path="../../typings/monaco-editor/monaco.d.ts" />
 import {Directive, ElementRef, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy, OnChanges, AfterViewChecked, SimpleChanges} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {debounceTime, takeUntil, filter, map} from 'rxjs/operators';
+import {debounceTime, takeUntil, filter, map, distinctUntilChanged} from 'rxjs/operators';
 
 // Services
 import {MonacoEditorService} from '../../services/monaco-editor.service';
 
 // Entities
-import {File} from '../../entities/file';
-import {distinctUntilChanged} from 'rxjs/operators/distinctUntilChanged';
+import {MonacoFile} from '../../entities/file';
+import {MonacoEditorOptions} from '../../entities/editor-options';
 
 @Directive({
 	selector: 'monaco-editor,[monaco-editor]'
@@ -16,17 +16,12 @@ import {distinctUntilChanged} from 'rxjs/operators/distinctUntilChanged';
 export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, AfterViewChecked {
 	// Inputs
 	@Input() theme: string;
-	@Input() file: File;
-	@Input() options: monaco.editor.IEditorOptions = {
-		minimap: {
-			enabled: true
-		},
-		folding: true
-	};
+	@Input() file: MonacoFile;
+	@Input() options: MonacoEditorOptions;
 
 	// Outputs
 	@Output() ready = new EventEmitter();
-	@Output() fileChange = new EventEmitter<File>();
+	@Output() fileChange = new EventEmitter<MonacoFile>();
 
 	// Internal
 	private resize$ = new Subject();
@@ -46,7 +41,7 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, Afte
 	 *
 	 * @param file File to open.
 	 */
-	open(file: File) {
+	open(file: MonacoFile) {
 		this.monacoEditorService.open(file);
 	}
 
