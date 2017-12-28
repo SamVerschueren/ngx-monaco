@@ -1,5 +1,5 @@
 /// <reference path="../typings/monaco-editor/monaco.d.ts" />
-import {Injectable, ElementRef, Optional, Inject} from '@angular/core';
+import {Injectable, ElementRef, Optional, Inject, NgZone} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {shareReplay, take, map, takeUntil, tap} from 'rxjs/operators';
@@ -43,7 +43,8 @@ export class MonacoEditorService {
 
 	constructor(
 		@Optional() @Inject(COMPLETION_PROVIDERS) private completionProviders: CompletionItemProvider[],
-		@Optional() @Inject(MONACO_EDITOR_OPTIONS) private editorOptions: MonacoEditorOptions
+		@Optional() @Inject(MONACO_EDITOR_OPTIONS) private editorOptions: MonacoEditorOptions,
+		private zone: NgZone
 	) {}
 
 	get editor() {
@@ -71,9 +72,11 @@ export class MonacoEditorService {
 				takeUntil(destroy)
 			)
 			.subscribe(content => {
-				this.onFileChange.next({
-					...file,
-					content
+				this.zone.run(() => {
+					this.onFileChange.next({
+						...file,
+						content
+					});
 				});
 			});
 	}
