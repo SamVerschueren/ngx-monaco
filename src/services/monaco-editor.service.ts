@@ -82,6 +82,17 @@ export class MonacoEditorService {
 	}
 
 	/**
+	 * Dispose all editor models
+	 */
+	disposeModels() {
+		if (window.monaco) {
+			for (const model of monaco.editor.getModels()) {
+				model.dispose();
+			}
+		}
+	}
+
+	/**
 	 * Bootstrap the monaco editor.
 	 *
 	 * @param container Container of the editor.
@@ -93,10 +104,7 @@ export class MonacoEditorService {
 		return this.bootstrap$.pipe(
 			tap(() => {
 				// Dispose all the current models
-				for (const model of monaco.editor.getModels()) {
-					model.dispose();
-				}
-
+        this.disposeModels();
 				// Create a new monaco editor
 				this.monacoEditor = monaco.editor.create(container.nativeElement, {
 					theme: options.theme,

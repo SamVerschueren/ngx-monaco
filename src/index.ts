@@ -4,6 +4,9 @@ export {MonacoEditorModule} from './monaco-editor.module';
 // Directives
 export {MonacoEditorDirective} from './directives/monaco-editor/monaco-editor.directive';
 
+// Services
+export {MonacoEditorService} from './services/monaco-editor.service';
+
 // Entities
 export {MonacoFile} from './entities/file';
 export {CompletionItemProvider} from './entities/completion-item-provider';
