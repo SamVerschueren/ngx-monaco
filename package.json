@@ -1,6 +1,6 @@
 {
   "name": "ngx-monaco",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Monaco Editor for Angular",
   "license": "MIT",
   "repository": "SamVerschueren/ngx-monaco",
