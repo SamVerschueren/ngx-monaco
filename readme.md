@@ -67,7 +67,7 @@ export class AppComponent { }
 
 ```ts
 import { Component } from '@angular/core';
-import { File } from 'ngx-monaco';
+import { MonacoFile } from 'ngx-monaco';
 
 @Component({
 	selector: 'app-root',
@@ -81,13 +81,13 @@ import { File } from 'ngx-monaco';
 	`
 })
 export class AppComponent {
-	file: File = {
+	file: MonacoFile = {
 		uri: 'index.js',
 		language: 'javascript',
 		content: `console.log('hello world');`
 	};
 
-	onFileChange(file: File) {
+	onFileChange(file: MonacoFile) {
 		// Handle file change
 	}
 }
