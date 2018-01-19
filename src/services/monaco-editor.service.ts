@@ -142,6 +142,16 @@ export class MonacoEditorService {
 
 		let model = monaco.editor.getModel(uri);
 
+		if (model) {
+			if (file.language && model.getModeId() !== file.language) {
+				model.dispose();
+
+				model = undefined;
+			} else {
+				model.setValue(file.content);
+			}
+		}
+
 		if (!model) {
 			model = monaco.editor.createModel(file.content, file.language, uri);
 
