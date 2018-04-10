@@ -35,10 +35,12 @@
   },
   "devDependencies": {
     "@angular/common": "^5.1.0",
+    "@angular/compiler": "^5.1.0",
+    "@angular/compiler-cli": "^5.1.0",
     "@angular/core": "^5.1.0",
     "cpy-cli": "^1.0.1",
     "monaco-editor": "^0.10.1",
-    "ng-packagr": "^1.6.0",
+    "ng-packagr": "^2.4.2",
     "rxjs": "^5.5.5",
     "tslint": "^5.8.0",
     "tslint-xo": "^0.3.0",
