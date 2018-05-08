@@ -1,0 +1,22 @@
+<div id="page">
+	<h1>Monaco in Angular</h1>
+
+	<section class="content" id="content">
+		<ul>
+			<li
+				*ngFor="let file of files"
+				(click)="open(file)">
+				{{ file.uri || 'undefined' }}
+			</li>
+		</ul>
+
+		<monaco-editor
+			#editor
+			[theme]="theme"
+			[options]="{quickSuggestions: true}"
+			[file]="file"
+			(ready)="onReady($event)"
+			(fileChange)="fileChange.next($event)">
+		</monaco-editor>
+	</section>
+</div>

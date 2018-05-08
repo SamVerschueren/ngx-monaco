@@ -1,0 +1,34 @@
+.content {
+	display: flex;
+	font-weight: 100;
+	font-family: Helvetica;
+
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		width: 150px;
+		background-color: black;
+		border-right: 1px solid gray;
+
+		li {
+			line-height: 1.5em;
+			color: white;
+			cursor: pointer;
+			padding: 0 5px;
+
+			&:hover {
+				background-color: lighten(black, 20%)
+			}
+		}
+	}
+
+	monaco-editor, [monaco-editor] {
+		width: 100%;
+		display: block;
+	}
+}
+
+monaco-editor, [monaco-editor] {
+	height: 500px !important;
+}

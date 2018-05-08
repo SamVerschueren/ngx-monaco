@@ -2,6 +2,7 @@
 
 > [Monaco Editor](https://github.com/Microsoft/monaco-editor) for Angular
 
+You can easily run the [example](example) locally.
 
 ## Install
 
@@ -154,6 +155,10 @@ import { TravisCompletionProvider } from './providers/travis-completion.provider
 })
 export class AppModule { }
 ```
+
+## Development
+
+Run the [example](example) locally. Make changes directly in the `src` directory and start the example again. It will automatically build the library before it starts the application.
 
 
 ## Related
