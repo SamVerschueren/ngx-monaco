@@ -11,14 +11,14 @@ $ npm install monaco-editor ngx-monaco
 
 > Note: The `monaco-editor` package is a peer dependency of this package.
 
-### angular-cli.json
+### angular.json
 
-Add the following lines to the app `assets` array in `.angular-cli.json`.
+Add the following lines to the app `assets` array in `angular.json`.
 
 ```json
 {
 	"glob": "**/*",
-	"input": "../node_modules/monaco-editor/min/vs",
+	"input": "./node_modules/monaco-editor/min/vs",
 	"output": "libs/vs"
 }
 ```

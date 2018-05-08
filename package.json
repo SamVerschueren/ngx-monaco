@@ -28,23 +28,23 @@
     "vs"
   ],
   "peerDependencies": {
-    "@angular/common": "^5.1.0",
-    "@angular/core": "^5.1.0",
-    "monaco-editor": "^0.10.1",
-    "rxjs": "^5.5.5"
+    "@angular/common": "^6.0.0",
+    "@angular/core": "^6.0.0",
+    "monaco-editor": "^0.12.0",
+    "rxjs": "^6.0.0"
   },
   "devDependencies": {
-    "@angular/common": "^5.1.0",
-    "@angular/compiler": "^5.1.0",
-    "@angular/compiler-cli": "^5.1.0",
-    "@angular/core": "^5.1.0",
+    "@angular/common": "^6.0.0",
+    "@angular/compiler": "^6.0.0",
+    "@angular/compiler-cli": "^6.0.0",
+    "@angular/core": "^6.0.0",
     "cpy-cli": "^1.0.1",
-    "monaco-editor": "^0.10.1",
+    "monaco-editor": "^0.12.0",
     "ng-packagr": "^2.4.2",
-    "rxjs": "^5.5.5",
+    "rxjs": "^6.1.0",
     "tslint": "^5.8.0",
     "tslint-xo": "^0.3.0",
-    "typescript": "^2.6.2",
+    "typescript": "~2.7.2",
     "yarn": "^1.5.1"
   },
   "ngPackage": {

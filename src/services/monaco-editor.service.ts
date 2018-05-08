@@ -1,7 +1,6 @@
 /// <reference path="../typings/monaco-editor/monaco.d.ts" />
 import {Injectable, ElementRef, Optional, Inject, NgZone} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import {Observable, Subject} from 'rxjs';
 import {shareReplay, take, map, takeUntil, tap} from 'rxjs/operators';
 
 import {fromDisposable} from '../utils/observable/from-disposable';
@@ -71,7 +70,7 @@ export class MonacoEditorService {
 				map(() => model.getValue()),
 				takeUntil(destroy)
 			)
-			.subscribe(content => {
+			.subscribe((content: string) => {
 				this.zone.run(() => {
 					this.onFileChange.next({
 						...file,

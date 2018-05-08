@@ -1,6 +1,6 @@
 /// <reference path="../../typings/monaco-editor/monaco.d.ts" />
 import {Directive, ElementRef, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy, OnChanges, AfterViewChecked, SimpleChanges} from '@angular/core';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {debounceTime, takeUntil, filter, map, distinctUntilChanged} from 'rxjs/operators';
 
 // Services
