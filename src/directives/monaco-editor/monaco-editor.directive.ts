@@ -19,6 +19,8 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, Afte
 	@Input() file: MonacoFile;
 	@Input() options: MonacoEditorOptions;
 
+	@Input() contentChange = new Subject<string>();
+
 	// Outputs
 	@Output() ready = new EventEmitter();
 	@Output() fileChange = new EventEmitter<MonacoFile>();
@@ -71,6 +73,11 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, Afte
 		).subscribe(dimension => {
 			this.monacoEditorService.editor.layout(dimension);
 		});
+
+		this.contentChange
+			.subscribe(content => {
+				this.monacoEditorService.setContent(content);
+			});
 	}
 
 	ngOnDestroy() {

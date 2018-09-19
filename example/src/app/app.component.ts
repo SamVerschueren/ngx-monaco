@@ -28,6 +28,7 @@ console.log('Hello World');`
 	file = this.files[0];
 
 	fileChange = new Subject<MonacoFile>();
+	contentChange = new Subject<string>();
 
 	@ViewChild(MonacoEditorDirective) editor: MonacoEditorDirective;
 
@@ -47,5 +48,11 @@ console.log('Hello World');`
 		).subscribe(file => {
 			console.log(file);
 		});
+	}
+
+	updateContent() {
+		setInterval(() => {
+			this.contentChange.next(Date.now().toString());
+		}, 3000);
 	}
 }

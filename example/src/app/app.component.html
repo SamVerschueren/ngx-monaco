@@ -1,6 +1,7 @@
 <div id="page">
 	<h1>Monaco in Angular</h1>
 
+	<button (click)="updateContent()">Set Content</button>
 	<section class="content" id="content">
 		<ul>
 			<li
@@ -15,6 +16,7 @@
 			[theme]="theme"
 			[options]="{quickSuggestions: true}"
 			[file]="file"
+			[contentChange]="contentChange"
 			(ready)="onReady($event)"
 			(fileChange)="fileChange.next($event)">
 		</monaco-editor>

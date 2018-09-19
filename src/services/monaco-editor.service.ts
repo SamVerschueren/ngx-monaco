@@ -161,6 +161,28 @@ export class MonacoEditorService {
 		this.monacoEditor.setModel(model);
 	}
 
+	setContent(content: string) {
+		// We consider the file always to be set
+		if (!this.file) {
+			return;
+		}
+
+		const uri = monaco.Uri.file(this.file.uri);
+		const model = monaco.editor.getModel(uri);
+
+		// Get the cursor and selections
+		const pos = this.monacoEditor.getPosition();
+		const selections = this.monacoEditor.getSelections();
+
+		// Update the value
+		model.setValue(content);
+		this.monacoEditor.setModel(model);
+
+		// Bring the cursor and selections back in position
+		this.monacoEditor.setPosition(pos);
+		this.monacoEditor.setSelections(selections);
+	}
+
 	/**
 	 * Change the options of the editor.
 	 *
