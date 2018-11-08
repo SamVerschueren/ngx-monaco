@@ -50,8 +50,8 @@ export class MonacoEditorDirective implements OnInit, OnDestroy, OnChanges, Afte
 		this.monacoEditorService.load(this.editorRef, {
 			theme: this.theme,
 			editor: this.options
-		}).subscribe(editor => {
-			this.ready.emit(editor);
+		}).subscribe(() => {
+			this.ready.emit(this.monacoEditorService.editor);
 		});
 
 		// Listen for file changes
