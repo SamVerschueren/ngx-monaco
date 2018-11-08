@@ -99,7 +99,7 @@ export class MonacoEditorService {
 	 * @param container Container of the editor.
 	 * @param options Editor options.
 	 */
-	load(container: ElementRef, options: {theme?: string; editor?: MonacoEditorOptions} = {}): Observable<void> {
+	load(container: ElementRef, options: {theme?: string; editor?: MonacoEditorOptions} = {}): Observable<monaco.editor.IEditor> {
 		const editorOptions = options.editor || this.editorOptions || {};
 
 		return this.bootstrap$.pipe(
